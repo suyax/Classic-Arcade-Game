@@ -1,5 +1,5 @@
 // Enemies our player must avoid
-var Enemy = function(x, y,speed) {
+var Enemy = function(x,y,speed) {
     this.x = x;
     this.y = y;//setting the init location
     this.speed = speed;//setting the enemey speed
@@ -15,7 +15,8 @@ var Enemy = function(x, y,speed) {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    this.x += this.speed*dt;//updstes the new location
+    this.x += this.speed*dt;
+    //updstes the new location
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
@@ -35,8 +36,6 @@ var Player= function() {
 
 // This class requires an update(), render() and
 Player.prototype.update = function() {
-    this.x =this.x;
-    this.y =this.y;
 };
 
 
@@ -44,16 +43,17 @@ Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-Player.prototype.handleInput = function() {
-    if (this.x>=101 && this.x <=404 && this.y>=101 &&this.y<=505) {
-        if (e.keyCode===37) {
-            this.x=this.x-101}
-        else if (e.keyCode===38) {
-            this.y=this.y-101}
-        else if (e.keyCode===39) {
-            this.x=this.x+101}
-        else if (e.keyCode==40) {
-            this.y=this.y+101
+Player.prototype.handleInput = function(key) {
+    if (this.x >= 101 && this.x <= 404 && this.y >= 101 && this.y <= 505) {
+        var speed = 100;
+        if (key ==='left') {
+            this.x += speed;
+        } else if (key ==='up') {
+            this.y += speed;
+        } else if (key ==='right') {
+            this.x -= speed;
+        } else if (key ==='down') {
+            this.y -= speed;
         }
     };
 };
@@ -64,10 +64,12 @@ Player.prototype.handleInput = function() {
 // Place all enemy objects in an array called allEnemies
 
 // Place the player object in a variable called player
-var allEnemies= [new Enemy(0,36,100)];
-    allEnemies.push(new Enemy(0,136,100));
-    allEnemies.push(new Enemy(0,236,100));
-var player= new Player();
+var enemy1 = new Enemy(0,36,100);
+var enemy2 = new Enemy(0,136,100);
+var enemy3 = new Enemy(0,236,100);
+
+var allEnemies= [enemy1,enemy2,enemy3];
+var player= Object.create(Player);
 
 
 

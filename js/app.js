@@ -44,18 +44,19 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.handleInput = function(key) {
-    if (this.x >= 101 && this.x <= 404 && this.y >= 101 && this.y <= 505) {
-        var speed = 100;
-        if (key ==='left') {
-            this.x += speed;
-        } else if (key ==='up') {
-            this.y += speed;
-        } else if (key ==='right') {
-            this.x -= speed;
-        } else if (key ==='down') {
-            this.y -= speed;
-        }
-    };
+    var speed = 50;
+    if (key ==='left' && this.x >= 51) {
+        this.x -= speed;
+    } else if (key ==='up' && this.y >= 51) {
+        this.y -= speed;
+    } else if (key ==='right' && this.x <= 375) {
+        this.x += speed;
+    } else if (key ==='down' && this.y <= 400) {
+        this.y += speed;
+    } else {
+        this.x=this.x;
+        this.y=this.y;
+    }
 };
 // a handleInput() method.
 
@@ -69,7 +70,7 @@ var enemy2 = new Enemy(0,136,100);
 var enemy3 = new Enemy(0,236,100);
 
 var allEnemies= [enemy1,enemy2,enemy3];
-var player= Object.create(Player);
+var player= new Player;
 
 
 

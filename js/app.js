@@ -15,12 +15,14 @@ var Enemy = function(x,y,speed) {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    var collision = function(player_x, enemy_x) {
-        if (player_x <= enemy_x+40 && player_x >= enemy_x-35) {
+	//collision function based on palyer and enemy image size calculate the collision position, reuduce collision range
+	//on Y coordinance to make the game easier
+    var collision = function(player_x, player_y, enemy_x, enemy_y) {
+        if ( enemy_x <= player_x && player_x <= enemy_x+50 && enemy_y-50 <= player_y && player_y <= enemy_y+50) {
             return true;
         };
     }
-    if (collision(player.x, this.x)===true) {
+    if (collision(player.x, player.y, this.x, this.y )===true) {
         player.x =202;
         player.y =302;
     };
@@ -83,26 +85,31 @@ Player.prototype.handleInput = function(key) {
 
 // Place the player object in a variable called player
 
-var makeLane = function(numEnemy,enemy_y,speed) {
+var makeLane = function(NumEnemy,enemy_y,speed) {
     var lane =[];
     var enemy_x = function() {
-        var start_loc = Math.floor((Math.random() * 505))
+        var start_loc = randomNum(0,505,random)
         return start_loc};
-    for (var i =1 ; i <= numEnemy; i++){
+    for (var i =1 ; i <= NumEnemy; i++){
         var enemy= new Enemy(enemy_x(),enemy_y,speed);
         lane.push(enemy);
     }
-    return lane
+    return lane;
 };
-//lane 1 speed=100 numEnemy=2
-//lane 2 speed=120 numEnemy=1
-//lane 3 speed =80 numEnemy=3
-var allEnemies = makeLane(2,36,100).concat(makeLane(1,136,120)).concat(makeLane(3,236,80))
+//lane 1 enemy_y location 36
+//lane 2 enemy_y location 136
+//lane 3 enemy_y location 236
+
+var allEnemies = makeLane(randomNum(1,4,random),36,randomNum(80,120,random)).concat(makeLane(randomNum(1,4,random),136,randomNum(80,120,random))).concat(makeLane(randomNum(1,4,random),236,randomNum(80,120,random)));
 var player = new Player;
 
+function random(from, to){
+	return Math.floor(Math.random()*to)+from;
+}
 
-
-
+function randomNum(from, to, random) {
+	return random(from, to);
+}
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

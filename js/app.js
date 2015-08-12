@@ -48,8 +48,24 @@ Enemy.prototype.render = function() {
 // Now write your own player class
 var Player= function() {
     this.x = 202;
-    this.y = 303;//initi location of player
+    this.y = 303;
+
+    //initi location of player
     this.sprite = 'images/char-boy.png';
+};
+
+Player.prototype.selectChar =function(key) {
+    if (key === 'one') {
+        this.sprite = 'images/char-boy.png';
+    } else if (key === 'two') {
+        this.sprite = 'images/char-cat-girl.png';
+    } else if (key === 'three') {
+        this.sprite = 'images/char-horn-girl.png';
+    } else if (key === 'four') {
+        this.sprite = 'images/char-pink-girl.png';
+    } else if (key === 'five') {
+        this.sprite = 'images/char-princess-girl.png';
+    }
 };
 
 // This class requires an update(), render() and
@@ -59,7 +75,6 @@ Player.prototype.update = function() {
         this.y = 303;
     }
 };
-
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -79,7 +94,6 @@ Player.prototype.handleInput = function(key) {
 };
 // a handleInput() method.
 
-
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 
@@ -89,7 +103,6 @@ var makeLane = function(NumEnemy,enemy_y,speed) {
     var lane =[], enemiesIntial=[];
     var enemy_x = function() {
         var start_loc = randomNum(100,405,random);
-        console.log(start_loc, enemiesIntial, overlay(start_loc, enemiesIntial))
         while(overlay(start_loc, enemiesIntial)){
         	start_loc = randomNum(100,405,random);
         }
@@ -109,12 +122,12 @@ var makeLane = function(NumEnemy,enemy_y,speed) {
 
 var allEnemies = makeLane(randomNum(1,3,random),36,randomNum(80,120,random)).concat(makeLane(randomNum(1,3,random),136,randomNum(80,120,random))).concat(makeLane(randomNum(1,3,random),236,randomNum(80,120,random)));
 var player = new Player;
+console.log(player);
 
 //helper functions
 function overlay(location, array){
 	result=false;
 	for(var element in array){
-		console.log ("location"+location,"element"+array[element]);
 		if((location > array[element]-100) && (location < array[element]+100)){
 			result= true;
 			break;
@@ -138,10 +151,16 @@ document.addEventListener('keydown', function(e) {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        49: 'one',
+        50: 'two',
+        51: 'three',
+        52: 'four',
+        53: 'five'
     };
-
+    player.selectChar(allowedKeys[e.keyCode]);
     player.handleInput(allowedKeys[e.keyCode]);
+
 });
 //calculation score
 //select charactors

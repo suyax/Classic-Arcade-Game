@@ -25,6 +25,7 @@ Enemy.prototype.update = function(dt) {
     if (collision(player.x, player.y, this.x, this.y )===true) {
         player.x =202;
         player.y =302;
+        player.score--;
     };
     var loop = function(enemy_x) {
         if (enemy_x >= 505) {
@@ -49,6 +50,7 @@ Enemy.prototype.render = function() {
 var Player= function() {
     this.x = 202;
     this.y = 303;
+    this.score =1;
 
     //initi location of player
     this.sprite = 'images/char-boy.png';
@@ -73,12 +75,29 @@ Player.prototype.update = function() {
     if (this.y <= -20) {
         this.x = 202;
         this.y = 303;
+        this.score += 100;
     }
 };
 
 Player.prototype.render = function() {
+    ctx.font = "20px serif";
+    ctx.fillText("Press 1", 25, 575);
+    ctx.fillText("Press 2", 126, 575);
+    ctx.fillText("Press 3", 227, 575);
+    ctx.fillText("Press 4", 328, 575);
+    ctx.fillText("Press 5", 429, 575);
+    ctx.fillText("Score: "+ this.score,414,101);
+    ctx.fillStyle = "white";
+    ctx.textAlign = "left";
+
+    ctx.drawImage(Resources.get('images/char-boy.png'), 0,404)
+    ctx.drawImage(Resources.get('images/char-cat-girl.png'), 101,404)
+    ctx.drawImage(Resources.get('images/char-horn-girl.png'), 202,404)
+    ctx.drawImage(Resources.get('images/char-pink-girl.png'), 303,404)
+    ctx.drawImage(Resources.get('images/char-princess-girl.png'), 404,404)
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+
 
 Player.prototype.handleInput = function(key) {
     var speed = 51;
@@ -99,7 +118,7 @@ Player.prototype.handleInput = function(key) {
 
 // Place the player object in a variable called player
 
-var makeLane = function(NumEnemy,enemy_y,speed) {
+var makeLane = function(numEnemy,enemy_y,speed) {
     var lane =[], enemiesIntial=[];
     var enemy_x = function() {
         var start_loc = randomNum(100,405,random);
@@ -110,7 +129,7 @@ var makeLane = function(NumEnemy,enemy_y,speed) {
 		return start_loc;
     }
 
-    for (var i=0; i < NumEnemy; i++){
+    for (var i=0; i < numEnemy; i++){
         var enemy= new Enemy(enemy_x(),enemy_y,speed);
         lane.push(enemy)
     }
@@ -162,6 +181,4 @@ document.addEventListener('keydown', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 
 });
-//calculation score
-//select charactors
 //put gems

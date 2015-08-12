@@ -86,13 +86,20 @@ Player.prototype.handleInput = function(key) {
 // Place the player object in a variable called player
 
 var makeLane = function(NumEnemy,enemy_y,speed) {
-    var lane =[];
+    var lane =[], enemiesIntial=[];
     var enemy_x = function() {
-        var start_loc = randomNum(0,505,random)
-        return start_loc};
-    for (var i =1 ; i <= NumEnemy; i++){
+        var start_loc = randomNum(100,405,random);
+        console.log(start_loc, enemiesIntial, overlay(start_loc, enemiesIntial))
+        while(overlay(start_loc, enemiesIntial)){
+        	start_loc = randomNum(100,405,random);
+        }
+		enemiesIntial.push(start_loc)
+		return start_loc;
+    }
+
+    for (var i=0; i < NumEnemy; i++){
         var enemy= new Enemy(enemy_x(),enemy_y,speed);
-        lane.push(enemy);
+        lane.push(enemy)
     }
     return lane;
 };
@@ -100,8 +107,21 @@ var makeLane = function(NumEnemy,enemy_y,speed) {
 //lane 2 enemy_y location 136
 //lane 3 enemy_y location 236
 
-var allEnemies = makeLane(randomNum(1,4,random),36,randomNum(80,120,random)).concat(makeLane(randomNum(1,4,random),136,randomNum(80,120,random))).concat(makeLane(randomNum(1,4,random),236,randomNum(80,120,random)));
+var allEnemies = makeLane(randomNum(1,3,random),36,randomNum(80,120,random)).concat(makeLane(randomNum(1,3,random),136,randomNum(80,120,random))).concat(makeLane(randomNum(1,3,random),236,randomNum(80,120,random)));
 var player = new Player;
+
+//helper functions
+function overlay(location, array){
+	result=false;
+	for(var element in array){
+		console.log ("location"+location,"element"+array[element]);
+		if((location > array[element]-100) && (location < array[element]+100)){
+			result= true;
+			break;
+		}
+	}
+	return result;
+}
 
 function random(from, to){
 	return Math.floor(Math.random()*to)+from;
@@ -123,3 +143,6 @@ document.addEventListener('keydown', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+//calculation score
+//select charactors
+//put gems

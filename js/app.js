@@ -17,15 +17,10 @@ var Enemy = function(x,y,speed) {
 Enemy.prototype.update = function(dt) {
 	//collision function based on palyer and enemy image size calculate the collision position, reuduce collision range
 	//on Y coordinance to make the game easier
-    var collision = function(player_x, player_y, enemy_x, enemy_y) {
-        if ( enemy_x <= player_x && player_x <= enemy_x+50 && enemy_y-50 <= player_y && player_y <= enemy_y+50) {
-            return true;
-        };
-    }
-    if (collision(player.x, player.y, this.x, this.y )===true) {
+    if (collision(player.x, player.y, this.x, this.y, 50)) {
         player.x =202;
         player.y =302;
-        player.score--;
+        player.score-=5;
     };
     var loop = function(enemy_x) {
         if (enemy_x >= 505) {
@@ -50,10 +45,31 @@ Enemy.prototype.render = function() {
 var Player= function() {
     this.x = 202;
     this.y = 303;
-    this.score =1;
+    this.score =0;
 
     //initi location of player
     this.sprite = 'images/char-boy.png';
+};
+
+
+//set up Bonus
+var Bonus = function(){
+    this.x = randomNum(30,404)
+    this.y = randomNum(101,236)
+    this.sprite = 'images/Gem Orange.png'
+}
+
+Bonus.prototype.update = function(){
+    if (collision(player.x, player.y, this.x-20, this.y-60, 25)) {
+        this.x= randomNum(30,404);
+        this.y = randomNum(101,236);
+        player.score += 5;
+        //setInterval(function(){ new Bonus; }, 3000);
+    }
+};
+
+Bonus.prototype.render = function(){
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 50, 85);
 };
 
 Player.prototype.selectChar =function(key) {
@@ -75,7 +91,7 @@ Player.prototype.update = function() {
     if (this.y <= -20) {
         this.x = 202;
         this.y = 303;
-        this.score += 100;
+        this.score += 25;
     }
 };
 
@@ -110,7 +126,10 @@ Player.prototype.handleInput = function(key) {
     } else if (key ==='down' && this.y <= 400) {
         this.y += speed;
     }
+    console.log(player);
 };
+
+
 // a handleInput() method.
 
 // Now instantiate your objects.
@@ -121,9 +140,9 @@ Player.prototype.handleInput = function(key) {
 var makeLane = function(numEnemy,enemy_y,speed) {
     var lane =[], enemiesIntial=[];
     var enemy_x = function() {
-        var start_loc = randomNum(100,405,random);
+        var start_loc = randomNum(100,405);
         while(overlay(start_loc, enemiesIntial)){
-        	start_loc = randomNum(100,405,random);
+        	start_loc = randomNum(100,405);
         }
 		enemiesIntial.push(start_loc)
 		return start_loc;
@@ -139,11 +158,18 @@ var makeLane = function(numEnemy,enemy_y,speed) {
 //lane 2 enemy_y location 136
 //lane 3 enemy_y location 236
 
-var allEnemies = makeLane(randomNum(1,3,random),36,randomNum(80,120,random)).concat(makeLane(randomNum(1,3,random),136,randomNum(80,120,random))).concat(makeLane(randomNum(1,3,random),236,randomNum(80,120,random)));
+var allEnemies = makeLane(randomNum(1,1),36,randomNum(80,120)).concat(makeLane(randomNum(1,1),136,randomNum(80,120))).concat(makeLane(randomNum(1,1),236,randomNum(80,120)));
 var player = new Player;
-console.log(player);
+var gem = new Bonus;
+console.log(gem);
 
 //helper functions
+function collision(player_x, player_y, enemy_x, enemy_y, buffer) {
+    if ( enemy_x-buffer <= player_x && player_x <= enemy_x+buffer && enemy_y-buffer <= player_y && player_y <= enemy_y+buffer) {
+        return true;
+    };
+};
+
 function overlay(location, array){
 	result=false;
 	for(var element in array){
@@ -155,13 +181,13 @@ function overlay(location, array){
 	return result;
 }
 
-function random(from, to){
-	return Math.floor(Math.random()*to)+from;
+function randomNum(from, to) {
+    function random(){
+        return Math.floor(Math.random()*(to-from))+from;
 }
-
-function randomNum(from, to, random) {
 	return random(from, to);
 }
+
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -181,4 +207,6 @@ document.addEventListener('keydown', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 
 });
-//put gems
+//set up welcome
+//selet challeage level
+//set up game over you win

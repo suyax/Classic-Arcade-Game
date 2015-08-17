@@ -1,3 +1,5 @@
+"use strict";
+
 // Enemies our player must avoid
 var Enemy = function(x,y,speed) {
     this.x = x;
@@ -15,20 +17,22 @@ var Enemy = function(x,y,speed) {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-	//collision function based on palyer and enemy image size calculate the collision position, reuduce collision range
-	//on Y coordinance to make the game easier
+    //collision function based on palyer and enemy image size calculate the collision position, reuduce collision range
+    //on Y coordinance to make the game easier
     if (collision(player.x, player.y, this.x, this.y, 50)) {
         player.x =202;
         player.y =302;
-        player.score-=5;
-    };
+        player.life-=1;
+    }
+
     var loop = function(enemy_x) {
         if (enemy_x >= 505) {
-            return true
-        };
-    }
+            return true;
+        }
+    };
     if (loop(this.x) === true) {
-        this.x = -101};
+        this.x = -101;
+    }
     this.x += this.speed*dt;
 };
     //updstes the new location
@@ -45,7 +49,9 @@ Enemy.prototype.render = function() {
 var Player= function() {
     this.x = 202;
     this.y = 303;
-    this.score =0;
+    this.score = 0;
+    this.life = 3;
+
 
     //initi location of player
     this.sprite = 'images/char-boy.png';
@@ -54,17 +60,16 @@ var Player= function() {
 
 //set up Bonus
 var Bonus = function(){
-    this.x = randomNum(30,404)
-    this.y = randomNum(101,236)
-    this.sprite = 'images/Gem Orange.png'
-}
+    this.x = randomNum(30,404);
+    this.y = randomNum(101,236);
+    this.sprite = 'images/Gem Orange.png';
+};
 
 Bonus.prototype.update = function(){
-    if (collision(player.x, player.y, this.x-20, this.y-60, 25)) {
+    if (collision(player.x, player.y, this.x-25, this.y-55, 38)) {
         this.x= randomNum(30,404);
         this.y = randomNum(101,236);
-        player.score += 5;
-        //setInterval(function(){ new Bonus; }, 3000);
+        player.score += 10;
     }
 };
 
@@ -73,15 +78,15 @@ Bonus.prototype.render = function(){
 };
 
 Player.prototype.selectChar =function(key) {
-    if (key === 'one') {
+    if (key === 'one' && this.x === 202 && this.y===303) {
         this.sprite = 'images/char-boy.png';
-    } else if (key === 'two') {
+    } else if (key === 'two' && this.x === 202 && this.y===303) {
         this.sprite = 'images/char-cat-girl.png';
-    } else if (key === 'three') {
+    } else if (key === 'three' && this.x === 202 && this.y===303) {
         this.sprite = 'images/char-horn-girl.png';
-    } else if (key === 'four') {
+    } else if (key === 'four' && this.x === 202 && this.y===303) {
         this.sprite = 'images/char-pink-girl.png';
-    } else if (key === 'five') {
+    } else if (key === 'five' && this.x === 202 && this.y===303) {
         this.sprite = 'images/char-princess-girl.png';
     }
 };
@@ -91,8 +96,8 @@ Player.prototype.update = function() {
     if (this.y <= -20) {
         this.x = 202;
         this.y = 303;
-        this.score += 25;
-    }
+        this.score += 10;
+        }
 };
 
 Player.prototype.render = function() {
@@ -102,15 +107,16 @@ Player.prototype.render = function() {
     ctx.fillText("Press 3", 227, 575);
     ctx.fillText("Press 4", 328, 575);
     ctx.fillText("Press 5", 429, 575);
+    ctx.fillText("x "+this.life,350,101);
     ctx.fillText("Score: "+ this.score,414,101);
     ctx.fillStyle = "white";
     ctx.textAlign = "left";
-
-    ctx.drawImage(Resources.get('images/char-boy.png'), 0,404)
-    ctx.drawImage(Resources.get('images/char-cat-girl.png'), 101,404)
-    ctx.drawImage(Resources.get('images/char-horn-girl.png'), 202,404)
-    ctx.drawImage(Resources.get('images/char-pink-girl.png'), 303,404)
-    ctx.drawImage(Resources.get('images/char-princess-girl.png'), 404,404)
+    ctx.drawImage(Resources.get('images/Heart.png'), 320,60,30,55);
+    ctx.drawImage(Resources.get('images/char-boy.png'), 0,404);
+    ctx.drawImage(Resources.get('images/char-cat-girl.png'), 101,404);
+    ctx.drawImage(Resources.get('images/char-horn-girl.png'), 202,404);
+    ctx.drawImage(Resources.get('images/char-pink-girl.png'), 303,404);
+    ctx.drawImage(Resources.get('images/char-princess-girl.png'), 404,404);
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
@@ -126,7 +132,6 @@ Player.prototype.handleInput = function(key) {
     } else if (key ==='down' && this.y <= 400) {
         this.y += speed;
     }
-    console.log(player);
 };
 
 
@@ -140,17 +145,16 @@ Player.prototype.handleInput = function(key) {
 var makeLane = function(numEnemy,enemy_y,speed) {
     var lane =[], enemiesIntial=[];
     var enemy_x = function() {
-        var start_loc = randomNum(100,405);
+        var start_loc = randomNum(0,405);
         while(overlay(start_loc, enemiesIntial)){
-        	start_loc = randomNum(100,405);
+            start_loc = randomNum(0,405);
         }
-		enemiesIntial.push(start_loc)
-		return start_loc;
-    }
-
+        enemiesIntial.push(start_loc);
+        return start_loc;
+    };
     for (var i=0; i < numEnemy; i++){
-        var enemy= new Enemy(enemy_x(),enemy_y,speed);
-        lane.push(enemy)
+        var enemy = new Enemy(enemy_x(),enemy_y,speed);
+        lane.push(enemy);
     }
     return lane;
 };
@@ -158,10 +162,23 @@ var makeLane = function(numEnemy,enemy_y,speed) {
 //lane 2 enemy_y location 136
 //lane 3 enemy_y location 236
 
-var allEnemies = makeLane(randomNum(1,1),36,randomNum(80,120)).concat(makeLane(randomNum(1,1),136,randomNum(80,120))).concat(makeLane(randomNum(1,1),236,randomNum(80,120)));
-var player = new Player;
-var gem = new Bonus;
-console.log(gem);
+var level;
+var allEnemies;
+function selectLevel(key) {
+    if (key === 'easy') {
+        level= 1;
+    } else if (key === 'normal') {
+        level= 2;
+    } else if (key === 'hard') {
+        level= 3;
+    }
+    if (!allEnemies) {
+        allEnemies = makeLane(level,36,randomNum(80,120)).concat(makeLane(level,136,randomNum(80,120))).concat(makeLane(level,236,randomNum(80,120)));
+    }
+};
+var player = new Player();
+var gem = new Bonus();
+
 
 //helper functions
 function collision(player_x, player_y, enemy_x, enemy_y, buffer) {
@@ -171,23 +188,33 @@ function collision(player_x, player_y, enemy_x, enemy_y, buffer) {
 };
 
 function overlay(location, array){
-	result=false;
-	for(var element in array){
-		if((location > array[element]-100) && (location < array[element]+100)){
-			result= true;
-			break;
-		}
-	}
-	return result;
+    var result=false;
+    for(var element in array){
+        if((location > array[element]-100) && (location < array[element]+100)){
+            result= true;
+            break;
+        }
+    }
+    return result;
 }
 
 function randomNum(from, to) {
     function random(){
         return Math.floor(Math.random()*(to-from))+from;
 }
-	return random(from, to);
+    return random(from, to);
+}
+function playerWin(score){
+ if (score >=100) {
+        return true;
+    }
 }
 
+function playerLost(life){
+ if (life <=0) {
+        return true;
+    }
+}
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -201,12 +228,13 @@ document.addEventListener('keydown', function(e) {
         50: 'two',
         51: 'three',
         52: 'four',
-        53: 'five'
+        53: 'five',
+        69: 'easy',
+        78: 'normal',
+        72: 'hard'
     };
+    selectLevel(allowedKeys[e.keyCode]);
     player.selectChar(allowedKeys[e.keyCode]);
     player.handleInput(allowedKeys[e.keyCode]);
-
 });
-//set up welcome
-//selet challeage level
-//set up game over you win
+

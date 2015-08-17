@@ -1,3 +1,4 @@
+"use strict";
 /* Engine.js
  * This file provides the game loop functionality (update entities and render),
  * draws the initial game board on the screen, and then calls the update and
@@ -28,11 +29,169 @@ var Engine = (function(global) {
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
+    //this function setup the initial state of the game to menu
+    var State = function(){
+        this.current = 'menu';
+        this.level = 'normal';
+    };
+    // this function calls different function according to current game state
+    State.prototype.update = function(){
+        console.log(this.current);
+        if (this.current === 'menu'){
+            menu();
+        }else if (this.current === 'play'){
+            main();
+        }else if (this.current === 'gameWin') {
+            gameWin();
+        }else if (this.current === 'gameLost') {
+            gameLost();
+        }
+    };
+
+    // this function handle input for state switch
+    State.prototype.handleInput = function(key){
+        if ((key === 'easy'|| key === 'normal' || key === 'hard') && this.current === 'menu'){
+            this.current = 'play';
+        } else if(key ==='space' && (this.current === 'gameWin'|| this.current === 'gameLost')){
+            this.current = 'menu';
+        }
+    };
+    var state = new State();
+
+    document.addEventListener('keydown', function(e) {
+        var allowedKeys = {
+            32: 'space',
+            69: 'easy',
+            78: 'normal',
+            72: 'hard'
+        };
+        state.handleInput(allowedKeys[e.keyCode]);
+    });
+
+    // this function serves as the start screen for game
+    function menu() {
+        if(state.current === 'play'){
+            return state.update();
+        }
+        var now = Date.now(),
+            dt = (now - lastTime) / 1000.0;
+        menuRender();
+        lastTime = now;
+        win.requestAnimationFrame(menu);
+
+    }
+    function menuRender() {
+        ctx.clearRect(0,0,505, 505);
+        for (var i=0;i<6;i++){
+            for (var j=0;j<6;j++){
+                ctx.fillStyle = 'rgba(' + Math.floor(255-42.5*i) + ',' +Math.floor(255-42.5*j) + ',0,0.8)';
+                ctx.fillRect(j*101,i*101,101,101);
+            }
+        };
+        ctx.strokeRect(0,0,canvas.width, canvas.height);
+        ctx.font = "40px serif";
+        ctx.textAlign = "left";
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        ctx.shadowBlur = 2;
+        ctx.shadowColor = "rgba(0,0,0,0.5)";
+        ctx.fillStyle = "white";
+        ctx.drawImage(Resources.get('images/enemy-bug.png'), 0,150);
+        ctx.drawImage(Resources.get('images/enemy-bug.png'), 0,251);
+        ctx.drawImage(Resources.get('images/enemy-bug.png'), 101,251);
+        ctx.drawImage(Resources.get('images/enemy-bug.png'), 0,352);
+        ctx.drawImage(Resources.get('images/enemy-bug.png'), 101,352);
+        ctx.drawImage(Resources.get('images/enemy-bug.png'), 202,352);
+        ctx.fillText("Welcome to Frogger Game", 25, 50);
+        ctx.font = "25px serif";
+        ctx.fillText("Please Select Game Level", 25, 150);
+        ctx.fillText("     Press E for Easy", 300, 260);
+        ctx.fillText("Press N for Normal", 300, 361);
+        ctx.fillText("    Press H for Hard", 300, 463);
+    };
+
+
+    //this functin serves as win screen after game
+    function gameWin(){
+        if (state.current === 'menu'){
+            return state.update();
+        }
+        var now = Date.now(),
+            dt = (now - lastTime) / 1000.0;
+        winRender();
+        lastTime = now;
+        win.requestAnimationFrame(gameWin);
+    };
+    function winRender() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        var img=Resources.get('images/Heart.png');
+        var pat=ctx.createPattern(img,"repeat");
+        ctx.rect(0,-100,canvas.width, canvas.height);
+        ctx.fillStyle=pat;
+        ctx.fill();
+        ctx.drawImage(Resources.get('images/char-princess-girl.png'), 200,100)
+        ctx.font = "40px serif";
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        ctx.shadowBlur = 2;
+        ctx.shadowColor = "rgba(0,0,0,0.5)";
+        ctx.fillStyle = "purple";
+        ctx.fillText("              YOU WIN!",25,250)
+        ctx.fillText("    Press Space to Replay!",25,350)
+        ctx.strokeRect(0,0,505, 606);
+
+    };
+
+     //this functin serves as lost screen after game
+    function gameLost(){
+        if (state.current === 'menu'){
+            return state.update();
+        };
+        var now = Date.now(),
+            dt = (now - lastTime) / 1000.0;
+        lostRender();
+        lastTime = now;
+        win.requestAnimationFrame(gameLost);
+    };
+    function lostRender() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        var img=Resources.get('images/Rock.png');
+        var pat=ctx.createPattern(img,"repeat");
+        ctx.rect(0,-100,canvas.width, canvas.height);
+        ctx.fillStyle=pat;
+        ctx.fill();
+        ctx.drawImage(Resources.get('images/char-boy.png'), 200,100)
+        ctx.font = "40px serif";
+        ctx.textAlign = "left";
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        ctx.shadowBlur = 2;
+        ctx.shadowColor = "rgba(0,0,0,0.5)";
+        ctx.fillStyle = "purple";
+        ctx.fillText("              YOU LOST!",25,400)
+        ctx.fillText("    Press Space to Replay!",25,550)
+        ctx.strokeRect(0,0,505, 606);
+    };
+
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
+
     function main() {
+        ctx.clearRect(0,0,505,606);
+        if (playerWin(player.score) && state.current==='play' ) {
+            player.score = 0;
+            player.life = 3;
+            state.current = 'gameWin';
+            return state.update();
+        };
+        if (playerLost(player.life) && state.current==='play') {
+            player.score = 0;
+            player.life = 3;
+            state.current = 'gameLost';
+            return state.update();
+        };
         /* Get our time delta information which is required if your game
          * requires smooth animation. Because everyone's computer processes
          * instructions at different speeds we need a constant value that
@@ -57,16 +216,20 @@ var Engine = (function(global) {
          * function again as soon as the browser is able to draw another frame.
          */
         win.requestAnimationFrame(main);
+
     };
+
+    // this function will be called when game is over, display final result
+
 
     /* This function does some initial setup that should only occur once,
      * particularly setting the lastTime variable that is required for the
      * game loop.
      */
     function init() {
-        reset();
+        //reset();
         lastTime = Date.now();
-        main();
+        menu();
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -80,7 +243,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+
     }
 
     /* This is called by the update function  and loops through all of the
@@ -96,6 +259,7 @@ var Engine = (function(global) {
         });
         player.update();
         gem.update();
+
     }
 
     /* This function initially draws the "game level", it will then call
@@ -161,9 +325,10 @@ var Engine = (function(global) {
      * handle game reset states - maybe a new game menu or a game over screen
      * those sorts of things. It's only called once by the init() method.
      */
+
     function reset() {
-        // noop
-    }
+
+    };
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
@@ -180,9 +345,10 @@ var Engine = (function(global) {
         'images/char-pink-girl.png',
         'images/char-princess-girl.png',
         'images/Selector.png',
-        'images/Gem Orange.png'
-
-
+        'images/Gem Orange.png',
+        'images/Star.png',
+        'images/Heart.png',
+        'images/Rock.png',
 
     ]);
     Resources.onReady(init);

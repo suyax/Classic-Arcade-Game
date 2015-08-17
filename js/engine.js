@@ -1,25 +1,9 @@
 "use strict";
-/* Engine.js
- * This file provides the game loop functionality (update entities and render),
- * draws the initial game board on the screen, and then calls the update and
- * render methods on your player and enemy objects (defined in your app.js).
- *
- * A game engine works by drawing the entire game screen over and over, kind of
- * like a flipbook you may have created as a kid. When your player moves across
- * the screen, it may look like just that image/character is moving or being
- * drawn but that is not the case. What's really happening is the entire "scene"
- * is being drawn over and over, presenting the illusion of animation.
- *
- * This engine is available globally via the Engine variable and it also makes
- * the canvas' context (ctx) object globally available to make writing app.js
- * a little simpler to work with.
- */
-
+//This engine is available globally and it also makes the canvas' context (ctx) object globally available
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
-     * create the canvas element, grab the 2D context for that canvas
-     * set the canvas elements height/width and add it to the DOM.
-     */
+        create the canvas element, grab the 2D context for that canvas
+        set the canvas elements height/width and add it to the DOM. */
     var doc = global.document,
         win = global.window,
         canvas = doc.createElement('canvas'),
@@ -32,11 +16,9 @@ var Engine = (function(global) {
     //this function setup the initial state of the game to menu
     var State = function(){
         this.current = 'menu';
-        this.level = 'normal';
     };
     // this function calls different function according to current game state
     State.prototype.update = function(){
-        console.log(this.current);
         if (this.current === 'menu'){
             menu();
         }else if (this.current === 'play'){
@@ -45,30 +27,35 @@ var Engine = (function(global) {
             gameWin();
         }else if (this.current === 'gameLost') {
             gameLost();
+
         }
     };
-
-    // this function handle input for state switch
+    // this function handle input for game state switch
     State.prototype.handleInput = function(key){
         if ((key === 'easy'|| key === 'normal' || key === 'hard') && this.current === 'menu'){
             this.current = 'play';
         } else if(key ==='space' && (this.current === 'gameWin'|| this.current === 'gameLost')){
             this.current = 'menu';
+
         }
     };
+    //instance the state for current game
     var state = new State();
-
+    //pass key to state handleinput function
     document.addEventListener('keydown', function(e) {
         var allowedKeys = {
             32: 'space',
             69: 'easy',
             78: 'normal',
             72: 'hard'
+
         };
         state.handleInput(allowedKeys[e.keyCode]);
     });
 
-    // this function serves as the start screen for game
+    /*this function serves as the start screen for game
+    if current state is menu it will setup time dt and render menu
+    if current state swithed to play , it will call state.update */
     function menu() {
         if(state.current === 'play'){
             return state.update();
@@ -80,38 +67,9 @@ var Engine = (function(global) {
         win.requestAnimationFrame(menu);
 
     }
-    function menuRender() {
-        ctx.clearRect(0,0,505, 505);
-        for (var i=0;i<6;i++){
-            for (var j=0;j<6;j++){
-                ctx.fillStyle = 'rgba(' + Math.floor(255-42.5*i) + ',' +Math.floor(255-42.5*j) + ',0,0.8)';
-                ctx.fillRect(j*101,i*101,101,101);
-            }
-        };
-        ctx.strokeRect(0,0,canvas.width, canvas.height);
-        ctx.font = "40px serif";
-        ctx.textAlign = "left";
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.shadowBlur = 2;
-        ctx.shadowColor = "rgba(0,0,0,0.5)";
-        ctx.fillStyle = "white";
-        ctx.drawImage(Resources.get('images/enemy-bug.png'), 0,150);
-        ctx.drawImage(Resources.get('images/enemy-bug.png'), 0,251);
-        ctx.drawImage(Resources.get('images/enemy-bug.png'), 101,251);
-        ctx.drawImage(Resources.get('images/enemy-bug.png'), 0,352);
-        ctx.drawImage(Resources.get('images/enemy-bug.png'), 101,352);
-        ctx.drawImage(Resources.get('images/enemy-bug.png'), 202,352);
-        ctx.fillText("Welcome to Frogger Game", 25, 50);
-        ctx.font = "25px serif";
-        ctx.fillText("Please Select Game Level", 25, 150);
-        ctx.fillText("     Press E for Easy", 300, 260);
-        ctx.fillText("Press N for Normal", 300, 361);
-        ctx.fillText("    Press H for Hard", 300, 463);
-    };
 
-
-    //this functin serves as win screen after game
+    /*This function serves as the end point for the player losing the game
+      and handles properly calling the update and render methods.*/
     function gameWin(){
         if (state.current === 'menu'){
             return state.update();
@@ -121,28 +79,11 @@ var Engine = (function(global) {
         winRender();
         lastTime = now;
         win.requestAnimationFrame(gameWin);
-    };
-    function winRender() {
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        var img=Resources.get('images/Heart.png');
-        var pat=ctx.createPattern(img,"repeat");
-        ctx.rect(0,-100,canvas.width, canvas.height);
-        ctx.fillStyle=pat;
-        ctx.fill();
-        ctx.drawImage(Resources.get('images/char-princess-girl.png'), 200,100)
-        ctx.font = "40px serif";
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.shadowBlur = 2;
-        ctx.shadowColor = "rgba(0,0,0,0.5)";
-        ctx.fillStyle = "purple";
-        ctx.fillText("              YOU WIN!",25,250)
-        ctx.fillText("    Press Space to Replay!",25,350)
-        ctx.strokeRect(0,0,505, 606);
 
     };
 
-     //this functin serves as lost screen after game
+    /*This function serves as the end point for the player winning the game
+      and handles properly calling the update and render methods.*/
     function gameLost(){
         if (state.current === 'menu'){
             return state.update();
@@ -152,107 +93,60 @@ var Engine = (function(global) {
         lostRender();
         lastTime = now;
         win.requestAnimationFrame(gameLost);
-    };
-    function lostRender() {
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        var img=Resources.get('images/Rock.png');
-        var pat=ctx.createPattern(img,"repeat");
-        ctx.rect(0,-100,canvas.width, canvas.height);
-        ctx.fillStyle=pat;
-        ctx.fill();
-        ctx.drawImage(Resources.get('images/char-boy.png'), 200,100)
-        ctx.font = "40px serif";
-        ctx.textAlign = "left";
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.shadowBlur = 2;
-        ctx.shadowColor = "rgba(0,0,0,0.5)";
-        ctx.fillStyle = "purple";
-        ctx.fillText("              YOU LOST!",25,400)
-        ctx.fillText("    Press Space to Replay!",25,550)
-        ctx.strokeRect(0,0,505, 606);
+
     };
 
-
-    /* This function serves as the kickoff point for the game loop itself
-     * and handles properly calling the update and render methods.
-     */
-
+    /*This function serves as the kickoff point for the game loop itself
+      and handles properly calling the update and render methods.*/
     function main() {
-        ctx.clearRect(0,0,505,606);
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         if (playerWin(player.score) && state.current==='play' ) {
             player.score = 0;
             player.life = 3;
             state.current = 'gameWin';
             return state.update();
+
         };
         if (playerLost(player.life) && state.current==='play') {
             player.score = 0;
             player.life = 3;
             state.current = 'gameLost';
             return state.update();
+
         };
         /* Get our time delta information which is required if your game
-         * requires smooth animation. Because everyone's computer processes
-         * instructions at different speeds we need a constant value that
-         * would be the same for everyone (regardless of how fast their
-         * computer is) - hurray time!
-         */
+        requires smooth animation.*/
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
-
         /* Call our update/render functions, pass along the time delta to
-         * our update function since it may be used for smooth animation.
-         */
+         update function since it may be used for smooth animation.*/
         update(dt);
         render();
-
         /* Set our lastTime variable which is used to determine the time delta
-         * for the next time this function is called.
-         */
+        for the next time this function is called.*/
         lastTime = now;
-
         /* Use the browser's requestAnimationFrame function to call this
-         * function again as soon as the browser is able to draw another frame.
-         */
+        function again as soon as the browser is able to draw another frame.*/
         win.requestAnimationFrame(main);
-
     };
 
-    // this function will be called when game is over, display final result
-
-
-    /* This function does some initial setup that should only occur once,
-     * particularly setting the lastTime variable that is required for the
-     * game loop.
-     */
+    /* This function does some initial setup that should only occur once per game,
+    particularly setting the lastTime variable that is required for the game loop. */
     function init() {
-        //reset();
         lastTime = Date.now();
         menu();
-    }
 
-    /* This function is called by main (our game loop) and itself calls all
-     * of the functions which may need to update entity's data. Based on how
-     * you implement your collision detection (when two entities occupy the
-     * same space, for instance when your character should die), you may find
-     * the need to add an additional function call here. For now, we've left
-     * it commented out - you may or may not want to implement this
-     * functionality this way (you could just implement collision detection
-     * on the entities themselves within your app.js file).
-     */
+    }
+    /* This function is called by main and itself calls all
+    of the functions which may need to update entity's data. */
     function update(dt) {
         updateEntities(dt);
 
     }
-
     /* This is called by the update function  and loops through all of the
-     * objects within your allEnemies array as defined in app.js and calls
-     * their update() methods. It will then call the update function for your
-     * player object. These update methods should focus purely on updating
-     * the data/properties related to  the object. Do your drawing in your
-     * render methods.
-     */
+     objects within allEnemies array as defined in app.js and calls
+     their update() methods. It will then call the update function for your
+     player object. */
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
@@ -261,17 +155,12 @@ var Engine = (function(global) {
         gem.update();
 
     }
-
-    /* This function initially draws the "game level", it will then call
-     * the renderEntities function. Remember, this function is called every
-     * game tick (or loop of the game engine) because that's how games work -
-     * they are flipbooks creating the illusion of animation but in reality
-     * they are just drawing the entire screen over and over.
-     */
+    /* This function initially draws the "game", it will then call
+    the renderEntities function. This function is called every
+    game tick */
     function render() {
         /* This array holds the relative URL to the image used
-         * for that particular row of the game level.
-         */
+        for that particular row of the game level.*/
         var rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
@@ -279,61 +168,35 @@ var Engine = (function(global) {
                 'images/stone-block.png',   // Row 3 of 3 of stone
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
+
             ],
             numRows = 6,
             numCols = 5,
             row, col;
-
         /* Loop through the number of rows and columns we've defined above
-         * and, using the rowImages array, draw the correct image for that
-         * portion of the "grid"
-         */
+        and, using the rowImages array, draw the correct image for that
+        portion of the "grid"*/
         for (row = 0; row < numRows; row++) {
             for (col = 0; col < numCols; col++) {
-                /* The drawImage function of the canvas' context element
-                 * requires 3 parameters: the image to draw, the x coordinate
-                 * to start drawing and the y coordinate to start drawing.
-                 * We're using our Resources helpers to refer to our images
-                 * so that we get the benefits of caching these images, since
-                 * we're using them over and over.
-                 */
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
-
         renderEntities();
-    }
 
-    /* This function is called by the render function and is called on each game
-     * tick. It's purpose is to then call the render functions you have defined
-     * on your enemy and player entities within app.js
-     */
+    }
+    /* This function is called by the render function and is called on each game tick. */
     function renderEntities() {
-        /* Loop through all of the objects within the allEnemies array and call
-         * the render function you have defined.
-         */
+        gem.render();
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-
         player.render();
-        gem.render();
+
+        renderOther();
+
     }
-
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
-     */
-
-    function reset() {
-
-    };
-
-    /* Go ahead and load all of the images we know we're going to need to
-     * draw our game level. Then set init as the callback method, so that when
-     * all of these images are properly loaded our game will start.
-     */
+    /* load all of the images that need to draw . Then set init as the callback method,
+    so that when all of these images are properly loaded game will start. */
     Resources.load([
         'images/stone-block.png',
         'images/water-block.png',
@@ -346,16 +209,13 @@ var Engine = (function(global) {
         'images/char-princess-girl.png',
         'images/Selector.png',
         'images/Gem Orange.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
         'images/Star.png',
         'images/Heart.png',
         'images/Rock.png',
-
     ]);
     Resources.onReady(init);
-
-    /* Assign the canvas' context object to the global variable (the window
-     * object when run in a browser) so that developer's can use it more easily
-     * from within their app.js files.
-     */
+    /* Assign the canvas' context object to the global variable */
     global.ctx = ctx;
 })(this);

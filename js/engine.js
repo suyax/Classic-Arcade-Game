@@ -1,7 +1,9 @@
+/* engine.js file serves as the base file that handles basic shell of the game. it includes global variables, game state and resources to get
+the game going. Functions in engine.js should able to be reused for different games in the future.*/
 "use strict";
 //This engine is available globally and it also makes the canvas' context (ctx) object globally available
 var Engine = (function(global) {
-    /* Predefine the variables we'll be using within this scope,
+    /* Predefine the variables be usd within this scope,
         create the canvas element, grab the 2D context for that canvas
         set the canvas elements height/width and add it to the DOM. */
     var doc = global.document,
@@ -14,28 +16,29 @@ var Engine = (function(global) {
     canvas.height = 606;
     doc.body.appendChild(canvas);
     //this function setup the initial state of the game to menu
-    var State = function(){
+    var State = function() {
         this.current = 'menu';
     };
     // this function calls different function according to current game state
-    State.prototype.update = function(){
-        if (this.current === 'menu'){
+    State.prototype.update = function() {
+        if (this.current === 'menu') {
             menu();
-        }else if (this.current === 'play'){
+        } else if (this.current === 'play') {
             main();
-        }else if (this.current === 'gameWin') {
+        } else if (this.current === 'gameWin') {
             gameWin();
-        }else if (this.current === 'gameLost') {
+        } else if (this.current === 'gameLost') {
             gameLost();
 
         }
     };
     // this function handle input for game state switch
-    State.prototype.handleInput = function(key){
-        if ((key === 'easy'|| key === 'normal' || key === 'hard') && this.current === 'menu'){
+    State.prototype.handleInput = function(key) {
+        if ((key === 'easy' || key === 'normal' || key === 'hard') && this.current === 'menu') {
             this.current = 'play';
-        } else if(key ==='space' && (this.current === 'gameWin'|| this.current === 'gameLost')){
+        } else if (key === 'space' && (this.current === 'gameWin' || this.current === 'gameLost')) {
             this.current = 'menu';
+            reset();
 
         }
     };
@@ -57,7 +60,7 @@ var Engine = (function(global) {
     if current state is menu it will setup time dt and render menu
     if current state swithed to play , it will call state.update */
     function menu() {
-        if(state.current === 'play'){
+        if (state.current === 'play') {
             return state.update();
         }
         var now = Date.now(),
@@ -70,8 +73,8 @@ var Engine = (function(global) {
 
     /*This function serves as the end point for the player losing the game
       and handles properly calling the update and render methods.*/
-    function gameWin(){
-        if (state.current === 'menu'){
+    function gameWin() {
+        if (state.current === 'menu') {
             return state.update();
         }
         var now = Date.now(),
@@ -80,40 +83,40 @@ var Engine = (function(global) {
         lastTime = now;
         win.requestAnimationFrame(gameWin);
 
-    };
+    }
 
     /*This function serves as the end point for the player winning the game
       and handles properly calling the update and render methods.*/
-    function gameLost(){
-        if (state.current === 'menu'){
+    function gameLost() {
+        if (state.current === 'menu') {
             return state.update();
-        };
+        }
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
         lostRender();
         lastTime = now;
         win.requestAnimationFrame(gameLost);
 
-    };
+    }
 
     /*This function serves as the kickoff point for the game loop itself
       and handles properly calling the update and render methods.*/
     function main() {
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        if (playerWin(player.score) && state.current==='play' ) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (playerWin(player.score) && state.current === 'play') {
             player.score = 0;
             player.life = 3;
             state.current = 'gameWin';
             return state.update();
 
-        };
-        if (playerLost(player.life) && state.current==='play') {
+        }
+        if (playerLost(player.life) && state.current === 'play') {
             player.score = 0;
             player.life = 3;
             state.current = 'gameLost';
             return state.update();
 
-        };
+        }
         /* Get our time delta information which is required if your game
         requires smooth animation.*/
         var now = Date.now(),
@@ -128,11 +131,12 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
         function again as soon as the browser is able to draw another frame.*/
         win.requestAnimationFrame(main);
-    };
+    }
 
     /* This function does some initial setup that should only occur once per game,
     particularly setting the lastTime variable that is required for the game loop. */
     function init() {
+        reset();
         lastTime = Date.now();
         menu();
 
@@ -148,9 +152,11 @@ var Engine = (function(global) {
      their update() methods. It will then call the update function for your
      player object. */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
-        });
+        if (allEnemies) {
+            allEnemies.forEach(function(enemy) {
+                enemy.update(dt);
+            });
+        }
         player.update();
         gem.update();
 
@@ -162,12 +168,12 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
         for that particular row of the game level.*/
         var rowImages = [
-                'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
+                'images/water-block.png', // Top row is water
+                'images/stone-block.png', // Row 1 of 3 of stone
+                'images/stone-block.png', // Row 2 of 3 of stone
+                'images/stone-block.png', // Row 3 of 3 of stone
+                'images/grass-block.png', // Row 1 of 2 of grass
+                'images/grass-block.png' // Row 2 of 2 of grass
 
             ],
             numRows = 6,
@@ -187,13 +193,19 @@ var Engine = (function(global) {
     /* This function is called by the render function and is called on each game tick. */
     function renderEntities() {
         gem.render();
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
+        if (allEnemies) {
+            allEnemies.forEach(function(enemy) {
+                enemy.render();
+            });
+        }
         player.render();
-
         renderOther();
 
+    }
+
+    function reset() {
+        allEnemies = null;
+        player.sprite = 'images/char-boy.png';
     }
     /* load all of the images that need to draw . Then set init as the callback method,
     so that when all of these images are properly loaded game will start. */

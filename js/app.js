@@ -12,7 +12,8 @@ function menuRender() {
     ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
     for (var i = 0; i < 6; i++) {
         for (var j = 0; j < 6; j++) {
-            ctx.fillStyle = 'rgba(' + Math.floor(255 - 42.5 * i) + ',' + Math.floor(255 - 42.5 * j) + ',0,0.8)';
+            ctx.fillStyle = 'rgba(' + Math.floor(255 - 42.5 * i) + ',' + Math.floor(255 -
+                42.5 * j) + ',0,0.8)';
             ctx.fillRect(j * 101, i * 101, 101, 101);
         }
     }
@@ -142,7 +143,9 @@ Enemy.prototype.render = function() {
 
 //set up Bonus
 //set up array for all gems
-var gems = ['images/Gem Orange.png', 'images/Gem Blue.png', 'images/Gem Green.png'],
+var gems = ['images/Gem Orange.png', 'images/Gem Blue.png',
+        'images/Gem Green.png'
+    ],
     gemX = [101, 202, 303, 404],
     gemY = [101, 202, 303];
 
@@ -179,7 +182,10 @@ var Player = function() {
 
 };
 //put all charactor in array
-var charactors = ['images/char-boy.png', 'images/char-cat-girl.png', 'images/char-horn-girl.png', 'images/char-pink-girl.png', 'images/char-princess-girl.png'];
+var charactors = ['images/char-boy.png', 'images/char-cat-girl.png',
+    'images/char-horn-girl.png', 'images/char-pink-girl.png',
+    'images/char-princess-girl.png'
+];
 //when player at initial location, use key board to select charactors
 Player.prototype.selectChar = function(key) {
     if (this.x === 202 && this.y === 303) {
@@ -229,7 +235,7 @@ Player.prototype.handleInput = function(key) {
 
 // variable number of enemy and array allEnemies
 var numEnemy,
-    allEnemies,
+    allEnemies;
 // method selectLevel to fill allEnemis array based on num of enemy of each lane
 Player.prototype.selectLevel = function(key) {
     var speedMin = 50,
@@ -258,6 +264,7 @@ Player.prototype.selectLevel = function(key) {
             return result;
 
         }
+
         function enemy_x() { //if the start location of one enemy overlap with other enemies, then regenarate enmey start location
             var start_loc = randomNum(-101, 404);
             while (overlap(start_loc, enemiesIntial)) {
@@ -266,7 +273,7 @@ Player.prototype.selectLevel = function(key) {
             enemiesIntial.push(start_loc);
             return start_loc;
 
-        };
+        }
 
         for (var i = 0; i < numEnemy; i++) {
             var enemy = new Enemy(enemy_x(), enemy_y, speed);
@@ -274,13 +281,15 @@ Player.prototype.selectLevel = function(key) {
         }
         return lane;
 
-        }
+    }
 
     if (!allEnemies) {
-        allEnemies = makeLane(numEnemy, lanes[0], randomNum(speedMin, speedMax)).concat(makeLane(numEnemy, lanes[1], randomNum(speedMin, speedMax))).concat(makeLane(numEnemy, lanes[2], randomNum(speedMin, speedMax)));
+        allEnemies = makeLane(numEnemy, lanes[0], randomNum(speedMin, speedMax)).concat(
+            makeLane(numEnemy, lanes[1], randomNum(speedMin, speedMax))).concat(
+            makeLane(numEnemy, lanes[2], randomNum(speedMin, speedMax)));
 
     } //if allEnemies is not defined, put all enemy from each lane to allEnemies array.
-}
+};
 
 
 //set up level and instance of enemy and player
@@ -290,7 +299,8 @@ var gem = new Bonus();
 //helper functions
 //collision function based on palyer and enemy postion and buffer size calculation whether collision happen
 function collision(player_x, player_y, enemy_x, enemy_y, buffer) {
-    if (enemy_x - buffer <= player_x && player_x <= enemy_x + buffer && enemy_y - buffer <= player_y && player_y <= enemy_y + buffer) {
+    if (enemy_x - buffer <= player_x && player_x <= enemy_x + buffer && enemy_y -
+        buffer <= player_y && player_y <= enemy_y + buffer) {
         return true;
 
     }

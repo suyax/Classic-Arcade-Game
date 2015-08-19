@@ -1,7 +1,6 @@
 /* engine.js file serves as the base file that provide shell structure of the game.
 it includes global variables that can be used by app.js, game state mechanism and resources to get the game going.
 Functions in engine.js should able to refactor and reused in the future for similar games. */
-
 "use strict";
 //This engine is available globally and it also makes the canvas' context (ctx) object globally available
 var Engine = (function(global) {
@@ -36,9 +35,11 @@ var Engine = (function(global) {
     };
     // this function handle input for game state switch
     State.prototype.handleInput = function(key) {
-        if ((key === 'easy' || key === 'normal' || key === 'hard') && this.current === 'menu') {
+        if ((key === 'easy' || key === 'normal' || key === 'hard') && this.current ===
+            'menu') {
             this.current = 'play';
-        } else if (key === 'space' && (this.current === 'gameWin' || this.current === 'gameLost')) {
+        } else if (key === 'space' && (this.current === 'gameWin' || this.current ===
+                'gameLost')) {
             this.current = 'menu';
             reset();
 
@@ -105,15 +106,14 @@ var Engine = (function(global) {
       and handles properly calling the update and render methods.*/
     function main() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (playerWin(player.score) && state.current === 'play') {
-            state.current = 'gameWin';
+        if (state.current === 'play') {
+            if (playerWin(player.score)) {
+                state.current = 'gameWin';
+            }
+            if (playerLost(player.life)) {
+                state.current = 'gameLost';
+            }
             return state.update();
-
-        }
-        if (playerLost(player.life) && state.current === 'play') {
-            state.current = 'gameLost';
-            return state.update();
-
         }
         /* Get our time delta information which is required if your game
         requires smooth animation.*/
@@ -221,7 +221,6 @@ var Engine = (function(global) {
         'images/char-horn-girl.png',
         'images/char-pink-girl.png',
         'images/char-princess-girl.png',
-        'images/Selector.png',
         'images/Gem Orange.png',
         'images/Gem Blue.png',
         'images/Gem Green.png',

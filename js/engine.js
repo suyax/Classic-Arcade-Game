@@ -109,11 +109,13 @@ var Engine = (function(global) {
         if (state.current === 'play') {
             if (playerWin(player.score)) {
                 state.current = 'gameWin';
+                return state.update();
             }
             if (playerLost(player.life)) {
                 state.current = 'gameLost';
+                return state.update();
             }
-            return state.update();
+
         }
         /* Get our time delta information which is required if your game
         requires smooth animation.*/

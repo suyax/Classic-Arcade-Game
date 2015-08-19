@@ -1,5 +1,7 @@
-/* engine.js file serves as the base file that handles basic shell of the game. it includes global variables, game state and resources to get
-the game going. Functions in engine.js should able to be reused for different games in the future.*/
+/* engine.js file serves as the base file that provide shell structure of the game.
+it includes global variables that can be used by app.js, game state mechanism and resources to get the game going.
+Functions in engine.js should able to refactor and reused in the future for similar games. */
+
 "use strict";
 //This engine is available globally and it also makes the canvas' context (ctx) object globally available
 var Engine = (function(global) {
@@ -104,15 +106,11 @@ var Engine = (function(global) {
     function main() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         if (playerWin(player.score) && state.current === 'play') {
-            player.score = 0;
-            player.life = 3;
             state.current = 'gameWin';
             return state.update();
 
         }
         if (playerLost(player.life) && state.current === 'play') {
-            player.score = 0;
-            player.life = 3;
             state.current = 'gameLost';
             return state.update();
 
@@ -206,6 +204,10 @@ var Engine = (function(global) {
     function reset() {
         allEnemies = null;
         player.sprite = 'images/char-boy.png';
+        player.x = 202;
+        player.y = 303;
+        player.score = 0;
+        player.life = 3;
     }
     /* load all of the images that need to draw . Then set init as the callback method,
     so that when all of these images are properly loaded game will start. */

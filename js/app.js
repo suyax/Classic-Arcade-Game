@@ -227,13 +227,11 @@ Player.prototype.handleInput = function(key) {
     }
 };
 
-
+// variable number of enemy and array allEnemies
 var numEnemy,
     allEnemies,
-    player,
-    gem;
-//function selectLevel handles input for different game level
-function selectLevel(key) {
+// method selectLevel to fill allEnemis array based on num of enemy of each lane
+Player.prototype.selectLevel = function(key) {
     var speedMin = 50,
         speedMax = 150,
         lanes = [36, 137, 238]; //set up min and max speed, set up lane y location for each lane
@@ -244,44 +242,46 @@ function selectLevel(key) {
     } else if (key === 'hard') {
         numEnemy = 3;
     }
+    //makelane function make enemies on one single lane
+    function makeLane(numEnemy, enemy_y, speed) {
+        var lane = [],
+            enemiesIntial = [];
+
+        function overlap(location, array) {
+            var result = false;
+            for (var element in array) {
+                if ((location > array[element] - 101) && (location < array[element] + 101)) {
+                    result = true;
+                    break;
+                }
+            }
+            return result;
+
+        }
+        function enemy_x() { //if the start location of one enemy overlap with other enemies, then regenarate enmey start location
+            var start_loc = randomNum(-101, 404);
+            while (overlap(start_loc, enemiesIntial)) {
+                start_loc = randomNum(-101, 404);
+            }
+            enemiesIntial.push(start_loc);
+            return start_loc;
+
+        };
+
+        for (var i = 0; i < numEnemy; i++) {
+            var enemy = new Enemy(enemy_x(), enemy_y, speed);
+            lane.push(enemy);
+        }
+        return lane;
+
+        }
+
     if (!allEnemies) {
         allEnemies = makeLane(numEnemy, lanes[0], randomNum(speedMin, speedMax)).concat(makeLane(numEnemy, lanes[1], randomNum(speedMin, speedMax))).concat(makeLane(numEnemy, lanes[2], randomNum(speedMin, speedMax)));
 
     } //if allEnemies is not defined, put all enemy from each lane to allEnemies array.
 }
 
-//makelane function make enemies on one single lane
-function makeLane(numEnemy, enemy_y, speed) {
-    var lane = [],
-        enemiesIntial = [];
-
-    function overlap(location, array) {
-        var result = false;
-        for (var element in array) {
-            if ((location > array[element] - 101) && (location < array[element] + 101)) {
-                result = true;
-                break;
-            }
-        }
-        return result;
-
-    }
-    var enemy_x = function() { //if the start location of one enemy overlap with other enemies, then regenarate enmey start location
-        var start_loc = randomNum(-101, 404);
-        while (overlap(start_loc, enemiesIntial)) {
-            start_loc = randomNum(-101, 404);
-        }
-        enemiesIntial.push(start_loc);
-        return start_loc;
-
-    };
-    for (var i = 0; i < numEnemy; i++) {
-        var enemy = new Enemy(enemy_x(), enemy_y, speed);
-        lane.push(enemy);
-    }
-    return lane;
-
-}
 
 //set up level and instance of enemy and player
 var player = new Player();
@@ -335,7 +335,7 @@ document.addEventListener('keydown', function(e) {
         72: 'hard'
 
     };
-    selectLevel(allowedKeys[e.keyCode]);
+    player.selectLevel(allowedKeys[e.keyCode]);
     player.selectChar(allowedKeys[e.keyCode]);
     player.handleInput(allowedKeys[e.keyCode]);
 });

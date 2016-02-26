@@ -60,7 +60,8 @@ Frogger Game
 
   Suya Xu
   https://github.com/suyax
-  
+
+
   Website
   --------
   http://suyax.github.io/Classic-Arcade-Game/

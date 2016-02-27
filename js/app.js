@@ -105,8 +105,8 @@ function renderOther() {
 // Enemies our player must avoid
 var Enemy = function(x, y, speed) {
     this.x = x;
-    this.y = y; //setting the init location
-    this.speed = speed; //setting the enemey speed
+    this.y = y; //setting the inti location
+    this.speed = speed; //setting the enemy speed
     this.sprite = 'images/enemy-bug.png'; //helper for loading image
 
 };
@@ -115,12 +115,12 @@ var Enemy = function(x, y, speed) {
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
     if (collision(player.x, player.y, this.x, this.y, 50)) {
-        player.x = 202; //if collison happend player go back to inital location
+        player.x = 202; //if collision happen player go back to initial location
         player.y = 303;
         player.life--; //player life reduce one
 
     }
-    //check whether enemy reachs right edge of canvas
+    //check whether enemy reaches right edge of canvas
     function loop(enemy_x) {
         if (enemy_x >= CANVAS.width) {
             return true;
@@ -152,11 +152,11 @@ var gems = ['images/Gem Orange.png', 'images/Gem Blue.png',
 
 var Bonus = function() {
     this.x = gemX[Math.floor(Math.random() * gemX.length)];
-    this.y = gemY[Math.floor(Math.random() * gemY.length)]; //gems will appear in randomlocation
-    this.sprite = gems[Math.floor(Math.random() * gems.length)]; //gem will be randomcolor
+    this.y = gemY[Math.floor(Math.random() * gemY.length)]; //gems will appear in random location
+    this.sprite = gems[Math.floor(Math.random() * gems.length)]; //gem will be random color
 
 };
-// if player and gem collided, player socre up, gem reset
+// if player and gem collided, player score up, gem reset
 Bonus.prototype.update = function() {
     if (collision(player.x, player.y, this.x, this.y, 30)) {
         this.x = gemX[Math.floor(Math.random() * gemX.length)];
@@ -313,14 +313,14 @@ function randomNum(from, to) {
     return random(from, to);
 
 }
-//detact whether player win the game
+//detect whether player win the game
 function playerWin(score) {
     if (score >= 100) {
         return true;
 
     }
 }
-//detact whether player lose the game
+//detect whether player lose the game
 function playerLost(life) {
     if (life <= 0) {
         return true;
@@ -349,3 +349,9 @@ document.addEventListener('keydown', function(e) {
     player.selectChar(allowedKeys[e.keyCode]);
     player.handleInput(allowedKeys[e.keyCode]);
 });
+/* TO DO
+    1. add character effect after collision
+    2. add character effect after reach the other side
+    3. add sound effect
+    4. redesign game over win screen with number of time takes to win
+    5. redesign game over lose screen with number of gem player get

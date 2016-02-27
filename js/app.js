@@ -349,9 +349,9 @@ document.addEventListener('keydown', function(e) {
     player.selectChar(allowedKeys[e.keyCode]);
     player.handleInput(allowedKeys[e.keyCode]);
 });
-/* TO DO
+/*TO DO
     1. add character effect after collision
     2. add character effect after reach the other side
     3. add sound effect
     4. redesign game over win screen with number of time takes to win
-    5. redesign game over lose screen with number of gem player get
+    5. redesign game over lose screen with number of gem player get*/
